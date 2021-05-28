@@ -7,6 +7,7 @@ while i <= numOfSpecials:
     i += 1
 
 #TODO#
+#Import specials to database
 #Find the corresponding specials in the database - MongoDB
 
 #Use MS Word template to populate
