@@ -2,6 +2,18 @@ import pymongo
 import os
 from pymongo import MongoClient
 
+
+def remove_extras(filename):
+    with open(f"plainTxtSpecials/{filename}") as f:
+        file_string = f.read()
+        file_string = file_string[file_string.find("A.", file_string.find("SOUP")):]
+        file_string = file_string[:file_string.rfind("VEG", 0, file_string.rfind("MASH"))]
+        return file_string
+
+def cleanup_formatting(str):
+    newStr = " ".join(str.split())
+    return newStr
+
 #client = MongoClient()
 #print(client)
 
@@ -11,44 +23,57 @@ from pymongo import MongoClient
 directory_in_str = "/Users/victorochoa/Desktop/bo-specials/plainTxtSpecials/"
 directory = os.fsencode(directory_in_str)
 
-starts_list = ["A.", "B.", "C.", "D.", "E.", "F.", "G.", "H."]
 #listdir() returns a list version of the files in the directory
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
-    #Opens file with resources, auto closes
-    with open(f"plainTxtSpecials/{filename}") as f:
+    print(filename)
+    
+    file_string = remove_extras(filename)
 
-        file_string = f.read()
-        if file_string.find("BREAKFAST") != -1:
+    if file_string.find("BREAKFAST") != -1:
             continue
 
-        start_index = file_string.find("A.")
-        file_string = file_string[start_index:]
+    #Strings are falsy, so when empty and used as a boolean they evaluate to false
+    #I parse the files backwards, simply because that's the way my brain worked up a solution in the background!
+    while file_string:
+        #Using the 9 at the end of each price as a marker
+        start = file_string.rfind("9")
+        description = file_string[start + 1:]
+        description = cleanup_formatting(description)
+        print(description)
+        #push mongo
+        
+        #Using the $ symbol as a marker between the price and the name
+        file_string = file_string[:start + 1]
+        start = file_string.rfind("$")
+        price = file_string[start + 1:]
+        price = cleanup_formatting(price)
+        print(price)
+        #push
 
-        while not(file_string.startswith("VEG")):
-            name_index = file_string.find(".")
-            file_string = file_string[name_index+1:]
-            end_index = file_string.find(".")
-            specialitem_name = file_string[:end_index]
-            specialitem_name = specialitem_name.strip("…")
-            #join the specialitem_name list split into its words with single spaces
-            specialitem_name = " ".join(specialitem_name.split())
-            #push to mongo
-
-            price_index = file_string.find("$")
-            file_string = file_string[price_index+1:]
-            end_index = file_string.find('\n')
-            specialitem_price = file_string[:end_index]
-            #push to mongo
-
-            description_index = end_index + 1
-            file_string = file_string[description_index:]
-            end_index = file_string.find(".")
-            specialitem_description = file_string[:end_index-1]
-            specialitem_description = " ".join(specialitem_description.split())
+        #All that's left until the next description is the name with ... or . 
+        # and the letter before it so strip and reduce!
+        file_string = file_string[:start].strip("….")
+        start = file_string.rfind(".")
+        item_name = file_string[start + 1:]
+        item_name = cleanup_formatting(item_name)
+        print(item_name)
+        #push
+        
+        specialItem = {
+            "name" : f"{item_name}",
+            "price" : f"{price}",
+            "description": f"{description}",
             
-            file_string = file_string[end_index:]
+        }
+
+        file_string = file_string[:start - 1]
+    
+
+
             
+
+
             
 
         
