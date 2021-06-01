@@ -14,11 +14,11 @@ def cleanup_formatting(str):
     newStr = " ".join(str.split())
     return newStr
 
-#client = MongoClient()
+client = MongoClient()
 #print(client)
 
-#db = client.blackolive
-#specials = db.specials
+db = client.blackolive
+specials = db.specials
 
 directory_in_str = "/Users/victorochoa/Desktop/bo-specials/plainTxtSpecials/"
 directory = os.fsencode(directory_in_str)
@@ -26,6 +26,12 @@ directory = os.fsencode(directory_in_str)
 #listdir() returns a list version of the files in the directory
 for file in os.listdir(directory):
     filename = os.fsdecode(file)
+
+    if filename.find("LUNCH") != -1:
+        collection = db.lunchSpecials
+    else: 
+        collection = db.dinnerSpecials
+
     print(filename)
     
     file_string = remove_extras(filename)
@@ -40,16 +46,17 @@ for file in os.listdir(directory):
         start = file_string.rfind("9")
         description = file_string[start + 1:]
         description = cleanup_formatting(description)
-        print(description)
-        #push mongo
+        #print(description)
         
         #Using the $ symbol as a marker between the price and the name
         file_string = file_string[:start + 1]
         start = file_string.rfind("$")
         price = file_string[start + 1:]
-        price = cleanup_formatting(price)
-        print(price)
-        #push
+        try:
+            price = float(cleanup_formatting(price))
+        except ValueError:
+            print(price)
+        #print(price)
 
         #All that's left until the next description is the name with ... or . 
         # and the letter before it so strip and reduce!
@@ -57,15 +64,18 @@ for file in os.listdir(directory):
         start = file_string.rfind(".")
         item_name = file_string[start + 1:]
         item_name = cleanup_formatting(item_name)
-        print(item_name)
-        #push
+        #print(item_name)
         
         specialItem = {
             "name" : f"{item_name}",
-            "price" : f"{price}",
+            "price" : price,
             "description": f"{description}",
-            
         }
+
+        try:
+            collection.insert_one(specialItem)
+        except pymongo.errors.DuplicateKeyError:
+            print(f"{item_name} already stored in Database.")
 
         file_string = file_string[:start - 1]
     
