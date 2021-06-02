@@ -1,2 +1,4 @@
 .DS_Store
 ~$ecialsTemplate.dotx
+.vscode/*
+~$ecialsTemplate.docx
