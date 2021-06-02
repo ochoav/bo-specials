@@ -1,13 +1,36 @@
+from time import time
+import pymongo
+from pymongo import MongoClient
+
+client = MongoClient()
+db = client.blackolive
+
+
+while True:
+    timeOfDay = input("Are you working on lunch or dinner specials?\n Type L or D: ")
+    if "L" == timeOfDay.upper():
+        collection = db.lunchSpecials
+        break
+    elif "D" == timeOfDay.upper():
+        collection = db.dinnerSpecials
+        break
+    else:
+        print("Invalid input.")
+
+
 numOfSpecials = input("Please enter the number of specials for today: ")
 numOfSpecials = int(numOfSpecials)
 
 i = 1
 while i <= numOfSpecials:
-    input(f"Enter special number {i}: ")
+    special = input(f"Enter special number {i}: ").upper()
+
+    special = collection.find_one({"name": special})
+    print(special)
+
     i += 1
 
 #TODO#
-#Import specials to database
 #Find the corresponding specials in the database - MongoDB
 
 #Use MS Word template to populate

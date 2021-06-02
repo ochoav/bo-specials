@@ -18,7 +18,6 @@ client = MongoClient()
 #print(client)
 
 db = client.blackolive
-specials = db.specials
 
 directory_in_str = "/Users/victorochoa/Desktop/bo-specials/plainTxtSpecials/"
 directory = os.fsencode(directory_in_str)
