@@ -1,10 +1,11 @@
 from time import time
 import pymongo
 from pymongo import MongoClient
+from docxtpl import DocxTemplate
 
 client = MongoClient()
 db = client.blackolive
-
+doc = DocxTemplate("SpecialsTemplate.docx")
 
 while True:
     timeOfDay = input("Are you working on lunch or dinner specials?\n Type L or D: ")
