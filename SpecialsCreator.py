@@ -11,12 +11,12 @@ def select_template_and_collection():
         time_of_day = input("Are you working on lunch or dinner specials?\nType L or D: ")
         if "L" == time_of_day.upper():
             collection = db.lunchSpecials
-            template = DocxTemplate("LunchSpecialsTemplate.docx")
+            template = DocxTemplate("templates/LunchSpecialsTemplate.docx")
             time_of_day = "LUNCH"
             break
         elif "D" == time_of_day.upper():
             collection = db.dinnerSpecials
-            template = DocxTemplate("DinnerSpecialsTemplate.docx")
+            template = DocxTemplate("templates/DinnerSpecialsTemplate.docx")
             time_of_day = "DINNER"
             break
         else:
